@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>paul</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F4EAD8;
+    --surface: #FBF5E8;
+    --border: #E5D5BA;
+    --text: #281E10;
+    --muted: #A8906A;
+    --accent: #4E7E2E;
+    --accent-light: #EAF2E0;
+    --paul: #7A5C40;
+    --warm: #C68840;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .header {
+    padding: 48px 28px 24px;
+  }
+
+  .paul-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: var(--warm);
+    opacity: 0.7;
+    text-transform: lowercase;
+    margin-bottom: 32px;
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .list {
+    padding: 8px 20px 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .card:hover {
+    border-color: var(--warm);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+
+  .card-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .card-meta {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+  }
+
+  .add-card {
+    border: 1.5px dashed var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.15s;
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  .add-card:hover { border-color: var(--warm); color: var(--warm); }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="paul-logo">paul</div>
+  <div class="header-title">unsere<br>vorhaben</div>
+</div>
+
+<div class="list" id="vorhaben-list"></div>
+
+<script src="app.js"></script>
+<script>
+  function vorhabenAnzeigen() {
+    const projekte = projekteHolen();
+    const liste = document.getElementById('vorhaben-list');
+    liste.innerHTML = '';
+
+    Object.entries(projekte).forEach(([id, projekt]) => {
+      const anzahl = projekt.nachrichten?.filter(m => m.role === 'user').length || 0;
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerHTML = `
+        <div class="card-name">${escHtml(projekt.name || id)}</div>
+        <div class="card-meta">${anzahl} hinweise</div>
+      `;
+      div.onclick = () => {
+        window.location.href = `index.html?vorhaben=${encodeURIComponent(id)}`;
+      };
+      liste.appendChild(div);
+    });
+
+    const neu = document.createElement('div');
+    neu.className = 'add-card';
+    neu.textContent = '+ neues vorhaben';
+    neu.onclick = neuesVorhaben;
+    liste.appendChild(neu);
+  }
+
+  function neuesVorhaben() {
+    const name = prompt('name des vorhabens:');
+    if (!name) return;
+
+    const id = Date.now().toString();
+    const projekte = projekteHolen();
+    projekte[id] = { name, nachrichten: [] };
+    projekteSpeichern(projekte);
+    vorhabenAnzeigen();
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  vorhabenAnzeigen();
+</script>
+</body>
+</html>
