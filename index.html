@@ -28,14 +28,20 @@
     --warm:         #C68840;
   }
 
-  body {
+  html, body {
     font-family: 'DM Sans', sans-serif;
     background: var(--bg);
     color: var(--text);
-    height: 100dvh;
+    height: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+  }
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
   }
 
   .topbar {
@@ -109,7 +115,7 @@
   .msg-paul .msg-sender { font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 300; color: var(--paul-name); opacity: 0.65; margin-bottom: 4px; letter-spacing: 0.1em; }
   .msg-loading { opacity: 0.38; font-style: italic; font-size: 14px; }
 
-  .chat-input-wrap { padding: 12px 20px 16px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; position: sticky; bottom: 0; }
+  .chat-input-wrap { padding: 12px 20px 16px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; }
   .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
 
   .chat-input {
@@ -141,6 +147,7 @@
 </head>
 <body>
 
+<div id="app">
 <div class="topbar">
   <a href="vorhaben.html" class="topbar-back">←</a>
   <span class="topbar-title" id="topbar-title">–</span>
@@ -170,6 +177,7 @@
 </div>
 
 <script src="config.js"></script>
+</div><!-- end app -->
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
@@ -384,11 +392,14 @@ Maximal 1-2 Sätze. Deutsch.`;
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Mobile keyboard fix
+  // Mobile keyboard fix for iOS
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', () => {
-      document.body.style.height = window.visualViewport.height + 'px';
-      document.getElementById('chat-area').scrollTop = 99999;
+      const app = document.getElementById('app');
+      app.style.height = window.visualViewport.height + 'px';
+      setTimeout(() => {
+        document.getElementById('chat-area').scrollTop = 99999;
+      }, 50);
     });
   }
 
