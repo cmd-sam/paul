@@ -109,7 +109,7 @@
   .msg-paul .msg-sender { font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 300; color: var(--paul-name); opacity: 0.65; margin-bottom: 4px; letter-spacing: 0.1em; }
   .msg-loading { opacity: 0.38; font-style: italic; font-size: 14px; }
 
-  .chat-input-wrap { padding: 12px 20px 16px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; }
+  .chat-input-wrap { padding: 12px 20px 16px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; position: sticky; bottom: 0; }
   .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
 
   .chat-input {
@@ -388,6 +388,7 @@ Maximal 1-2 Sätze. Deutsch.`;
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', () => {
       document.body.style.height = window.visualViewport.height + 'px';
+      document.getElementById('chat-area').scrollTop = 99999;
     });
   }
 
