@@ -17,7 +17,7 @@
     --muted: #A8906A;
     --accent: #4E7E2E;
     --accent-light: #EAF2E0;
-    --paul: #7A5C40;
+    --user-bubble: #7A5C40;
     --warm: #C68840;
   }
 
@@ -28,9 +28,7 @@
     min-height: 100vh;
   }
 
-  .header {
-    padding: 48px 28px 24px;
-  }
+  .header { padding: 48px 28px 24px; }
 
   .paul-logo {
     font-family: 'DM Mono', monospace;
@@ -39,7 +37,6 @@
     letter-spacing: 0.25em;
     color: var(--warm);
     opacity: 0.7;
-    text-transform: lowercase;
     margin-bottom: 32px;
   }
 
@@ -51,9 +48,7 @@
     line-height: 1.2;
   }
 
-  .list {
-    padding: 8px 20px 20px;
-  }
+  .list { padding: 8px 20px 20px; }
 
   .card {
     background: var(--surface);
@@ -64,26 +59,14 @@
     cursor: pointer;
     transition: all 0.15s ease;
   }
-
   .card:hover {
     border-color: var(--warm);
     transform: translateY(-1px);
     box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   }
 
-  .card-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .card-meta {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-weight: 300;
-  }
+  .card-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .card-meta { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; font-weight: 300; }
 
   .add-card {
     border: 1.5px dashed var(--border);
@@ -99,12 +82,16 @@
     font-weight: 300;
     letter-spacing: 0.05em;
   }
+  .add-card:hover { border-color: var(--user-bubble); color: var(--user-bubble); }
 
-  .add-card:hover { border-color: var(--warm); color: var(--warm); }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .loading {
+    text-align: center;
+    padding: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
 </style>
 </head>
 <body>
@@ -114,25 +101,41 @@
   <div class="header-title">unsere<br>vorhaben</div>
 </div>
 
-<div class="list" id="vorhaben-list"></div>
+<div class="list" id="vorhaben-list">
+  <div class="loading">laden …</div>
+</div>
 
-<script src="app.js"></script>
-<script>
-  function vorhabenAnzeigen() {
-    const projekte = projekteHolen();
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const SUPABASE_URL = 'https://kstpwfvokaobkmmmnyhq.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzdHB3ZnZva2FvYmttbW1ueWhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjY0MjksImV4cCI6MjA4NzI0MjQyOX0.EaKIIqsUkJkLtBgsUkdrCyphlerqQGTh57DErwPbnEk';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function vorhabenAnzeigen() {
+    const { data, error } = await supabase
+      .from('vorhaben')
+      .select('id, name')
+      .order('erstellt_am', { ascending: false });
+
     const liste = document.getElementById('vorhaben-list');
     liste.innerHTML = '';
 
-    Object.entries(projekte).forEach(([id, projekt]) => {
-      const anzahl = projekt.nachrichten?.filter(m => m.role === 'user').length || 0;
+    if (error) {
+      liste.innerHTML = '<div class="loading">fehler beim laden.</div>';
+      console.error(error);
+      return;
+    }
+
+    (data || []).forEach(v => {
       const div = document.createElement('div');
       div.className = 'card';
       div.innerHTML = `
-        <div class="card-name">${escHtml(projekt.name || id)}</div>
-        <div class="card-meta">${anzahl} hinweise</div>
+        <div class="card-name">${escHtml(v.name)}</div>
+        <div class="card-meta">${v.id.slice(0,8)}</div>
       `;
       div.onclick = () => {
-        window.location.href = `index.html?vorhaben=${encodeURIComponent(id)}`;
+        window.location.href = `index.html?vorhaben=${encodeURIComponent(v.id)}`;
       };
       liste.appendChild(div);
     });
@@ -144,15 +147,16 @@
     liste.appendChild(neu);
   }
 
-  function neuesVorhaben() {
+  async function neuesVorhaben() {
     const name = prompt('name des vorhabens:');
     if (!name) return;
-
-    const id = Date.now().toString();
-    const projekte = projekteHolen();
-    projekte[id] = { name, nachrichten: [] };
-    projekteSpeichern(projekte);
-    vorhabenAnzeigen();
+    const { data, error } = await supabase
+      .from('vorhaben')
+      .insert({ name })
+      .select()
+      .single();
+    if (error) { console.error(error); return; }
+    window.location.href = `index.html?vorhaben=${encodeURIComponent(data.id)}`;
   }
 
   function escHtml(s) {

@@ -1,81 +1,121 @@
-let apiKey = localStorage.getItem('paul_api_key') || null;
-let aktiveProjektId = null;
+// ---- SUPABASE SETUP ----
+// Ersetze diese zwei Werte mit deinen eigenen aus dem Supabase Dashboard
+const SUPABASE_URL = 'https://kstpwfvokaobkmmmnyhq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzdHB3ZnZva2FvYmttbW1ueWhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjY0MjksImV4cCI6MjA4NzI0MjQyOX0.EaKIIqsUkJkLtBgsUkdrCyphlerqQGTh57DErwPbnEk';
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ---- API KEY (Claude) ----
+function apiKeyHolen() {
+  return localStorage.getItem('paul_api_key');
+}
 
 async function init() {
-  if (!apiKey) {
-    apiKey = prompt("Dein Anthropic API Key:");
-    if (apiKey) localStorage.setItem('paul_api_key', apiKey);
+  let key = apiKeyHolen();
+  if (!key) {
+    key = prompt('Claude API Key eingeben:');
+    if (key) localStorage.setItem('paul_api_key', key);
   }
 }
 
-function projekteHolen() {
-  return JSON.parse(localStorage.getItem('paul_projekte') || '{}');
+// ---- VORHABEN ----
+async function projekteHolen() {
+  const { data, error } = await supabase
+    .from('vorhaben')
+    .select('*')
+    .order('erstellt_am', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data;
 }
 
-function projekteSpeichern(projekte) {
-  localStorage.setItem('paul_projekte', JSON.stringify(projekte));
+async function vorhabenAnlegenDB(name) {
+  const { data, error } = await supabase
+    .from('vorhaben')
+    .insert({ name })
+    .select()
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
 }
 
-function nachrichtenHolen(projektId) {
-  const projekte = projekteHolen();
-  return projekte[projektId]?.nachrichten || [];
+// ---- NACHRICHTEN ----
+async function nachrichtenHolen(vorhabenId) {
+  const { data, error } = await supabase
+    .from('nachrichten')
+    .select('*')
+    .eq('vorhaben_id', vorhabenId)
+    .order('erstellt_am', { ascending: true });
+  if (error) { console.error(error); return []; }
+  return data.map(m => ({ role: m.rolle, content: m.inhalt }));
 }
 
-function nachrichtSpeichern(projektId, rolle, text) {
-  const projekte = projekteHolen();
-  if (!projekte[projektId]) projekte[projektId] = { nachrichten: [] };
-  projekte[projektId].nachrichten.push({ role: rolle, content: text });
-  projekteSpeichern(projekte);
+async function nachrichtSpeichern(vorhabenId, rolle, inhalt) {
+  const { error } = await supabase
+    .from('nachrichten')
+    .insert({ vorhaben_id: vorhabenId, rolle, inhalt });
+  if (error) console.error(error);
 }
 
-async function nachrichtSenden(projektId, text) {
-  nachrichtSpeichern(projektId, 'user', text);
+async function nachrichtSenden(vorhabenId, text) {
+  await nachrichtSpeichern(vorhabenId, 'user', text);
 
-  const nachrichten = nachrichtenHolen(projektId);
+  const nachrichten = await nachrichtenHolen(vorhabenId);
+  const apiKey = apiKeyHolen();
   const antwort = await paulAntwortet(nachrichten, apiKey);
 
-  nachrichtSpeichern(projektId, 'assistant', antwort);
+  await nachrichtSpeichern(vorhabenId, 'assistant', antwort);
   return antwort;
 }
 
-async function zusammenfassungAktualisieren(projektId) {
-  const nachrichten = nachrichtenHolen(projektId);
+// ---- ZUSAMMENFASSUNG ----
+async function zusammenfassungAktualisieren(vorhabenId) {
+  const nachrichten = await nachrichtenHolen(vorhabenId);
+  if (nachrichten.filter(m => m.role === 'user').length === 0) return null;
 
-  // Nur user/assistant, muss mit user beginnen
-  const gefiltert = nachrichten.filter(m => m.role === 'user' || m.role === 'assistant');
-  const ersterUser = gefiltert.findIndex(m => m.role === 'user');
-  if (ersterUser === -1) return;
+  const apiKey = apiKeyHolen();
+  const text = await paulZusammenfassung(nachrichten, apiKey);
+  if (!text) return null;
 
-  const bereinigte = gefiltert.slice(ersterUser);
-  console.log("Bereinigte Nachrichten:", bereinigte.length);
-  if (bereinigte.length < 1) return;
-
-  const text = await paulZusammenfassung(bereinigte, apiKey);
-  console.log("Zusammenfassung Text:", text);
-
-  const projekte = projekteHolen();
-  if (projekte[projektId]) {
-    projekte[projektId].zusammenfassung = text;
-    projekteSpeichern(projekte);
-  }
+  await supabase
+    .from('vorhaben')
+    .update({ zusammenfassung: text, zusammenfassung_zeit: new Date().toISOString() })
+    .eq('id', vorhabenId);
 
   return text;
 }
 
+async function zusammenfassungLaden(vorhabenId) {
+  const { data, error } = await supabase
+    .from('vorhaben')
+    .select('zusammenfassung, zusammenfassung_zeit')
+    .eq('id', vorhabenId)
+    .single();
+  if (error) return null;
+  return data;
+}
+
+// ---- PARSER ----
 function zusammenfassungParsen(text) {
-  console.log("Parsen:", text);
   const hinweise = [];
   const offen = [];
+  if (!text) return { hinweise, offen };
+
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   let aktiv = null;
 
-  text.split('\n').forEach(zeile => {
-    zeile = zeile.trim();
-    if (zeile.startsWith('HINWEISE')) { aktiv = 'hinweise'; return; }
-    if (zeile.startsWith('OFFEN')) { aktiv = 'offen'; return; }
-    if (zeile.startsWith('- ') && aktiv === 'hinweise') hinweise.push(zeile.slice(2));
-    if (zeile.startsWith('- ') && aktiv === 'offen') offen.push(zeile.slice(2));
-  });
-
-  console.log("Hinweise:", hinweise, "Offen:", offen);
+  for (const line of lines) {
+    const up = line.toUpperCase();
+    if (up.includes('HINWEISE') || up.includes('HINWEIS')) { aktiv = 'h'; continue; }
+    if (up.includes('OFFEN')) { aktiv = 'o'; continue; }
+    if (line.startsWith('-')) {
+      const inhalt = line.replace(/^-+\s*/, '');
+      if (aktiv === 'h') hinweise.push(inhalt);
+      if (aktiv === 'o') offen.push(inhalt);
+    }
+  }
   return { hinweise, offen };
 }
+
+// Legacy-Kompatibilität (wird in vorhaben.html noch genutzt)
+function projekteSpeichern() {}

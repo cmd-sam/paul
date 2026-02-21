@@ -10,18 +10,18 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #F2EDE6;
-    --surface: #FAF6F0;
-    --border: #E2D9CF;
-    --text: #1C1916;
-    --muted: #A89E93;
-    --accent: #5C8A3C;
-    --accent-light: #EBF3E4;
-    --msg-paul-bg: #FBF7F2;
-    --msg-user-bg: #B5705A;
-    --msg-user-text: #FDF6F3;
-    --warm: #D4845A;
-    --paul-label: #C4795A;
+    --bg:           #F4EAD8;
+    --surface:      #FBF5E8;
+    --border:       #E5D5BA;
+    --text:         #281E10;
+    --muted:        #A8906A;
+    --accent:       #4E7E2E;
+    --accent-light: #EAF2E0;
+    --accent-border:rgba(78,126,46,0.18);
+    --user-bubble:  #7A5C40;
+    --user-text:    #FDF6EC;
+    --paul-name:    #B87E3A;
+    --warm:         #C68840;
   }
 
   body {
@@ -42,42 +42,19 @@
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
     gap: 12px;
-    position: relative;
     z-index: 10;
   }
 
-  .topbar-back {
-    text-decoration: none;
-    color: var(--muted);
-    font-size: 18px;
-    flex-shrink: 0;
-    transition: color 0.15s;
-  }
+  .topbar-back { text-decoration: none; color: var(--muted); font-size: 18px; flex-shrink: 0; transition: color 0.15s; }
   .topbar-back:hover { color: var(--text); }
 
-  .topbar-title {
-    flex: 1;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  .topbar-title { flex: 1; font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  .topbar-paul {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 300;
-    letter-spacing: 0.2em;
-    color: var(--warm);
-    opacity: 0.6;
-    flex-shrink: 0;
-  }
+  .topbar-paul { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 300; letter-spacing: 0.22em; color: var(--warm); opacity: 0.55; flex-shrink: 0; }
 
   .summary-btn {
     background: var(--accent-light);
-    border: 1px solid rgba(92,138,60,0.25);
+    border: 1px solid var(--accent-border);
     border-radius: 20px;
     padding: 4px 12px;
     font-size: 11px;
@@ -92,146 +69,44 @@
     flex-shrink: 0;
   }
   .summary-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
-  .summary-btn.updating { opacity: 0.5; pointer-events: none; }
+  .summary-btn.updating { opacity: 0.45; pointer-events: none; }
   .summary-btn.open { background: var(--accent); color: white; border-color: var(--accent); }
-
-  .summary-btn .arrow {
-    font-size: 9px;
-    transition: transform 0.3s ease;
-    display: inline-block;
-  }
+  .summary-btn .arrow { font-size: 9px; transition: transform 0.3s ease; display: inline-block; }
   .summary-btn.open .arrow { transform: rotate(180deg); }
 
-  /* ---- SUMMARY DROPDOWN ---- */
   .summary-dropdown {
     background: var(--accent-light);
-    border-bottom: 1px solid rgba(92,138,60,0.12);
+    border-bottom: 1px solid var(--accent-border);
     overflow: hidden;
     max-height: 0;
-    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.25s ease,
-                box-shadow 0.25s ease;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease, box-shadow 0.25s ease;
     opacity: 0;
     flex-shrink: 0;
-    position: relative;
     z-index: 9;
   }
+  .summary-dropdown.open { max-height: 55vh; opacity: 1; box-shadow: 0 6px 24px rgba(40,30,16,0.07); overflow-y: auto; }
 
-  .summary-dropdown.open {
-    max-height: 55vh;
-    opacity: 1;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    overflow-y: auto;
-  }
-
-  .summary-dropdown-inner { padding: 16px 20px 20px; }
-
-  .summary-meta {
-    font-size: 10px;
-    font-family: 'DM Mono', monospace;
-    color: var(--accent);
-    opacity: 0.4;
-    margin-bottom: 14px;
-  }
-
+  .summary-dropdown-inner { padding: 16px 20px 22px; }
+  .summary-meta { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--accent); opacity: 0.4; margin-bottom: 14px; }
   .summary-section { margin-bottom: 14px; }
-
-  .summary-section-title {
-    font-size: 10px;
-    font-family: 'DM Mono', monospace;
-    font-weight: 300;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--accent);
-    opacity: 0.6;
-    margin-bottom: 6px;
-  }
-
-  .summary-item {
-    font-size: 13px;
-    color: #2E4A1E;
-    line-height: 1.55;
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(92,138,60,0.1);
-  }
+  .summary-section-title { font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 300; letter-spacing: 0.15em; color: var(--accent); opacity: 0.55; margin-bottom: 6px; }
+  .summary-item { font-size: 13px; color: #253A12; line-height: 1.55; padding: 5px 0; border-bottom: 1px solid rgba(78,126,46,0.1); }
   .summary-item:last-child { border-bottom: none; }
+  .summary-empty { font-size: 13px; color: var(--accent); opacity: 0.35; font-family: 'DM Mono', monospace; font-weight: 300; }
 
-  .summary-empty {
-    font-size: 13px;
-    color: var(--accent);
-    opacity: 0.4;
-    font-family: 'DM Mono', monospace;
-    font-weight: 300;
-  }
+  .chat-area { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); }
 
-  /* ---- CHAT ---- */
-  .chat-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .msg { max-width: 84%; padding: 10px 14px; border-radius: 14px; font-size: 16px; line-height: 1.55; animation: fadeUp 0.2s ease; }
 
-  .msg {
-    max-width: 85%;
-    padding: 10px 14px;
-    border-radius: 14px;
-    font-size: 16px;
-    line-height: 1.55;
-    animation: fadeUp 0.2s ease;
-  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  .msg-user { align-self: flex-end; background: var(--user-bubble); color: var(--user-text); border-bottom-right-radius: 4px; }
+  .msg-paul { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; }
+  .msg-paul .msg-sender { font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 300; color: var(--paul-name); opacity: 0.65; margin-bottom: 4px; letter-spacing: 0.1em; }
+  .msg-loading { opacity: 0.38; font-style: italic; font-size: 14px; }
 
-  .msg-user {
-    align-self: flex-end;
-    background: var(--msg-user-bg);
-    color: var(--msg-user-text);
-    border-bottom-right-radius: 4px;
-  }
-
-  .msg-paul {
-    align-self: flex-start;
-    background: var(--msg-paul-bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-bottom-left-radius: 4px;
-  }
-
-  .msg-paul .msg-sender {
-    font-size: 10px;
-    font-family: 'DM Mono', monospace;
-    font-weight: 300;
-    color: var(--paul-label);
-    opacity: 0.7;
-    margin-bottom: 4px;
-    letter-spacing: 0.1em;
-  }
-
-  .msg-loading {
-    opacity: 0.4;
-    font-style: italic;
-    font-size: 13px;
-  }
-
-  /* ---- INPUT ---- */
-  .chat-input-wrap {
-    padding: 12px 20px 16px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .chat-input-row {
-    display: flex;
-    gap: 8px;
-    align-items: flex-end;
-  }
+  .chat-input-wrap { padding: 12px 20px 16px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; }
+  .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
 
   .chat-input {
     flex: 1;
@@ -248,27 +123,12 @@
     max-height: 100px;
     transition: border-color 0.15s;
   }
-
   .chat-input::placeholder { color: var(--muted); }
   .chat-input:focus { border-color: var(--warm); }
 
-  .send-btn {
-    background: var(--warm);
-    border: none;
-    border-radius: 10px;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    color: white;
-    font-size: 16px;
-    flex-shrink: 0;
-    transition: opacity 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .send-btn:hover { opacity: 0.85; }
-  .send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .send-btn { background: var(--user-bubble); border: none; border-radius: 10px; width: 40px; height: 40px; cursor: pointer; color: var(--user-text); font-size: 16px; flex-shrink: 0; transition: opacity 0.15s; display: flex; align-items: center; justify-content: center; }
+  .send-btn:hover { opacity: 0.82; }
+  .send-btn:disabled { opacity: 0.28; cursor: not-allowed; }
 
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -289,9 +149,7 @@
 <div class="summary-dropdown" id="summary-dropdown">
   <div class="summary-dropdown-inner">
     <div class="summary-meta" id="summary-meta"></div>
-    <div id="summary-content">
-      <div class="summary-empty">noch keine zusammenfassung.</div>
-    </div>
+    <div id="summary-content"><div class="summary-empty">noch keine zusammenfassung.</div></div>
   </div>
 </div>
 
@@ -307,63 +165,80 @@
   </div>
 </div>
 
-<script src="api.js"></script>
-<script src="app.js"></script>
-<script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const SUPABASE_URL = 'https://kstpwfvokaobkmmmnyhq.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzdHB3ZnZva2FvYmttbW1ueWhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjY0MjksImV4cCI6MjA4NzI0MjQyOX0.EaKIIqsUkJkLtBgsUkdrCyphlerqQGTh57DErwPbnEk';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const PAUL_SYSTEM_PROMPT = `Du bist paul, ein stiller Projektbegleiter.
+Antworte kurz, ruhig und direkt.
+Kein Markdown. Keine Sterne. Keine Rauten. Keine Emojis. Kein Fettdruck.
+Kein Smalltalk. Kein Druck. Nur festhalten was wichtig ist.
+Maximal 1-2 Sätze. Deutsch.`;
+
   const params = new URLSearchParams(window.location.search);
-  const AKTUELLE_PROJEKT_ID = params.get('vorhaben') || 'standard';
+  const VORHABEN_ID = params.get('vorhaben');
   const INAKTIVITAET_MS = 2 * 60 * 1000;
   let inaktivitaetTimer = null;
   let summaryOffen = false;
 
-  async function start() {
-    await init();
-
-    const projekte = projekteHolen();
-    const name = projekte[AKTUELLE_PROJEKT_ID]?.name || 'vorhaben';
-    document.getElementById('topbar-title').textContent = name;
-
-    const alte = nachrichtenHolen(AKTUELLE_PROJEKT_ID);
-    if (alte.length === 0) {
-      nachrichtAnzeigen('paul', 'hallo. was liegt an?');
-    } else {
-      alte.forEach(m => {
-        const typ = m.role === 'user' ? 'user' : 'paul';
-        nachrichtAnzeigen(typ, m.content, false);
-      });
+  function apiKeyHolen() {
+    let key = localStorage.getItem('paul_api_key');
+    if (!key) {
+      key = prompt('Claude API Key eingeben:');
+      if (key) localStorage.setItem('paul_api_key', key);
     }
-
-    const projekt = projekte[AKTUELLE_PROJEKT_ID];
-    if (projekt?.zusammenfassung) {
-      zusammenfassungAnzeigen(projekt.zusammenfassung);
-      if (projekt.zusammenfassungZeit) summaryMetaAktualisieren(projekt.zusammenfassungZeit);
-    }
+    return key;
   }
 
-  function summaryToggle() {
+  async function start() {
+    if (!VORHABEN_ID) { window.location.href = 'vorhaben.html'; return; }
+
+    // Titel laden
+    const { data: v } = await supabase.from('vorhaben').select('name, zusammenfassung, zusammenfassung_zeit').eq('id', VORHABEN_ID).single();
+    if (v) {
+      document.getElementById('topbar-title').textContent = v.name;
+      if (v.zusammenfassung) {
+        zusammenfassungAnzeigen(v.zusammenfassung);
+        if (v.zusammenfassung_zeit) summaryMetaAktualisieren(v.zusammenfassung_zeit);
+      }
+    }
+
+    // Nachrichten laden
+    const { data: msgs } = await supabase.from('nachrichten').select('rolle, inhalt').eq('vorhaben_id', VORHABEN_ID).order('erstellt_am', { ascending: true });
+    if (!msgs || msgs.length === 0) {
+      nachrichtAnzeigen('paul', 'hallo. was liegt an?');
+    } else {
+      msgs.forEach(m => nachrichtAnzeigen(m.rolle === 'user' ? 'user' : 'paul', m.inhalt, false));
+    }
+
+    apiKeyHolen();
+  }
+
+  window.summaryToggle = function() {
     summaryOffen = !summaryOffen;
     document.getElementById('summary-dropdown').classList.toggle('open', summaryOffen);
     document.getElementById('summary-btn').classList.toggle('open', summaryOffen);
-  }
+  };
 
   function nachrichtAnzeigen(typ, text, animieren = true) {
     const chatArea = document.getElementById('chat-area');
     const div = document.createElement('div');
     div.className = 'msg msg-' + typ;
     if (!animieren) div.style.animation = 'none';
-
     if (typ === 'paul') {
       div.innerHTML = '<div class="msg-sender">paul</div>' + escHtml(text);
     } else {
       div.textContent = text;
     }
-
     chatArea.appendChild(div);
     chatArea.scrollTop = chatArea.scrollHeight;
     return div;
   }
 
-  async function senden() {
+  window.senden = async function() {
     const input = document.getElementById('chat-input');
     const btn = document.getElementById('send-btn');
     const text = input.value.trim();
@@ -372,25 +247,51 @@
     nachrichtAnzeigen('user', text);
     input.value = '';
     input.style.height = '';
-
     btn.disabled = true;
+
+    // User-Nachricht speichern
+    await supabase.from('nachrichten').insert({ vorhaben_id: VORHABEN_ID, rolle: 'user', inhalt: text });
+
     const loading = nachrichtAnzeigen('paul', '…');
     loading.classList.add('msg-loading');
 
     try {
-      const antwort = await nachrichtSenden(AKTUELLE_PROJEKT_ID, text);
+      // Alle Nachrichten für Kontext holen
+      const { data: msgs } = await supabase.from('nachrichten').select('rolle, inhalt').eq('vorhaben_id', VORHABEN_ID).order('erstellt_am', { ascending: true });
+      const nachrichten = (msgs || []).map(m => ({ role: m.rolle, content: m.inhalt }));
+
+      const apiKey = apiKeyHolen();
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 300,
+          system: PAUL_SYSTEM_PROMPT,
+          messages: nachrichten
+        })
+      });
+
+      const data = await response.json();
+      const antwort = data.content[0].text;
+
       loading.remove();
       nachrichtAnzeigen('paul', antwort);
+      await supabase.from('nachrichten').insert({ vorhaben_id: VORHABEN_ID, rolle: 'assistant', inhalt: antwort });
     } catch (e) {
       loading.remove();
       nachrichtAnzeigen('paul', 'verbindungsfehler. api key prüfen.');
-      btn.disabled = false;
-      return;
+      console.error(e);
     }
 
     btn.disabled = false;
     inaktivitaetTimerReset();
-  }
+  };
 
   function inaktivitaetTimerReset() {
     if (inaktivitaetTimer) clearTimeout(inaktivitaetTimer);
@@ -398,79 +299,94 @@
       const btn = document.getElementById('summary-btn');
       btn.classList.add('updating');
       try {
-        const zusammenfassung = await zusammenfassungAktualisieren(AKTUELLE_PROJEKT_ID);
-        if (zusammenfassung) {
-          zusammenfassungAnzeigen(zusammenfassung);
-          const jetzt = Date.now();
-          const projekte = projekteHolen();
-          if (projekte[AKTUELLE_PROJEKT_ID]) {
-            projekte[AKTUELLE_PROJEKT_ID].zusammenfassungZeit = jetzt;
-            projekteSpeichern(projekte);
-          }
-          summaryMetaAktualisieren(jetzt);
-        }
-      } catch (e) {
-        console.log('zusammenfassung fehler:', e);
-      }
+        const { data: msgs } = await supabase.from('nachrichten').select('rolle, inhalt').eq('vorhaben_id', VORHABEN_ID).order('erstellt_am', { ascending: true });
+        const nachrichten = (msgs || []).map(m => ({ role: m.rolle, content: m.inhalt }));
+        if (nachrichten.filter(m => m.role === 'user').length === 0) return;
+
+        const mitFormat = [...nachrichten, {
+          role: 'user',
+          content: `Fasse alles oben zusammen. Antworte NUR in diesem Format, ohne weitere Worte, kein Markdown, keine Sterne:\n\nHINWEISE\n- was festgehalten wurde\n\nOFFEN\n- was noch unklar ist`
+        }];
+
+        const apiKey = apiKeyHolen();
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 400, messages: mitFormat })
+        });
+
+        const data = await response.json();
+        const text = data.content[0].text;
+
+        zusammenfassungAnzeigen(text);
+        const jetzt = new Date().toISOString();
+        await supabase.from('vorhaben').update({ zusammenfassung: text, zusammenfassung_zeit: jetzt }).eq('id', VORHABEN_ID);
+        summaryMetaAktualisieren(jetzt);
+      } catch(e) { console.error(e); }
       btn.classList.remove('updating');
     }, INAKTIVITAET_MS);
   }
 
   function summaryMetaAktualisieren(timestamp) {
-    const el = document.getElementById('summary-meta');
     const d = new Date(timestamp);
-    const uhrzeit = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    el.textContent = 'stand ' + uhrzeit;
+    document.getElementById('summary-meta').textContent = 'stand ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   }
 
   function zusammenfassungAnzeigen(text) {
-    const { hinweise, offen } = zusammenfassungParsen(text);
-    const el = document.getElementById('summary-content');
-    let html = '';
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    const hinweise = [], offen = [];
+    let aktiv = null;
+    for (const line of lines) {
+      const up = line.toUpperCase();
+      if (up.includes('HINWEISE')) { aktiv = 'h'; continue; }
+      if (up.includes('OFFEN')) { aktiv = 'o'; continue; }
+      if (line.startsWith('-')) {
+        const inhalt = line.replace(/^-+\s*/, '');
+        if (aktiv === 'h') hinweise.push(inhalt);
+        if (aktiv === 'o') offen.push(inhalt);
+      }
+    }
 
+    let html = '';
     if (hinweise.length) {
-      html += '<div class="summary-section">';
-      html += '<div class="summary-section-title">hinweise</div>';
+      html += '<div class="summary-section"><div class="summary-section-title">hinweise</div>';
       hinweise.forEach(h => html += `<div class="summary-item">${escHtml(h)}</div>`);
       html += '</div>';
     }
-
     if (offen.length) {
-      html += '<div class="summary-section">';
-      html += '<div class="summary-section-title">offen</div>';
+      html += '<div class="summary-section"><div class="summary-section-title">offen</div>';
       offen.forEach(o => html += `<div class="summary-item">${escHtml(o)}</div>`);
       html += '</div>';
     }
-
-    if (!html) html = '<div class="summary-empty">noch keine zusammenfassung.</div>';
-    el.innerHTML = html;
+    document.getElementById('summary-content').innerHTML = html || '<div class="summary-empty">noch keine zusammenfassung.</div>';
   }
 
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      senden();
-    }
-  }
+  window.handleKey = function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); senden(); }
+  };
 
-  function autoResize(el) {
+  window.autoResize = function(el) {
     el.style.height = '';
     el.style.height = Math.min(el.scrollHeight, 100) + 'px';
-  }
+  };
 
   function escHtml(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  start();
-</script>
-<script>
   // Mobile keyboard fix
   if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", () => {
-      document.body.style.height = window.visualViewport.height + "px";
+    window.visualViewport.addEventListener('resize', () => {
+      document.body.style.height = window.visualViewport.height + 'px';
     });
   }
+
+  start();
 </script>
 </body>
 </html>
