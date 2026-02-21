@@ -149,7 +149,7 @@
 <div class="summary-dropdown" id="summary-dropdown">
   <div class="summary-dropdown-inner">
     <div class="summary-meta" id="summary-meta"></div>
-    <div id="summary-content"><div class="summary-empty">noch keine zusammenfassung.</div></div>
+    <div id="summary-content"><div class="summary-empty">schreib los – paul merkt sich den rest.</div></div>
   </div>
 </div>
 
@@ -168,8 +168,8 @@
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  const SUPABASE_URL = 'https://kstpwfvokaobkmmmnyhq.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzdHB3ZnZva2FvYmttbW1ueWhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjY0MjksImV4cCI6MjA4NzI0MjQyOX0.EaKIIqsUkJkLtBgsUkdrCyphlerqQGTh57DErwPbnEk';
+  const SUPABASE_URL = 'DEINE_PROJECT_URL';
+  const SUPABASE_KEY = 'DEIN_ANON_KEY';
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const PAUL_SYSTEM_PROMPT = `Du bist paul, ein stiller Projektbegleiter.
@@ -363,7 +363,7 @@ Maximal 1-2 Sätze. Deutsch.`;
       offen.forEach(o => html += `<div class="summary-item">${escHtml(o)}</div>`);
       html += '</div>';
     }
-    document.getElementById('summary-content').innerHTML = html || '<div class="summary-empty">noch keine zusammenfassung.</div>';
+    document.getElementById('summary-content').innerHTML = html || '<div class="summary-empty">schreib los – paul merkt sich den rest.</div>';
   }
 
   window.handleKey = function(e) {
