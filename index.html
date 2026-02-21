@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>paul</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap');
@@ -28,7 +28,7 @@
     font-family: 'DM Sans', sans-serif;
     background: var(--bg);
     color: var(--text);
-    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -57,7 +57,7 @@
 
   .topbar-title {
     flex: 1;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text);
     white-space: nowrap;
@@ -178,7 +178,7 @@
     max-width: 85%;
     padding: 10px 14px;
     border-radius: 14px;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.55;
     animation: fadeUp 0.2s ease;
   }
@@ -239,7 +239,7 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 10px 14px;
-    font-size: 14px;
+    font-size: 16px;
     font-family: 'DM Sans', sans-serif;
     resize: none;
     outline: none;
@@ -463,6 +463,14 @@
   }
 
   start();
+</script>
+<script>
+  // Mobile keyboard fix
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", () => {
+      document.body.style.height = window.visualViewport.height + "px";
+    });
+  }
 </script>
 </body>
 </html>
