@@ -105,11 +105,12 @@
   <div class="loading">laden …</div>
 </div>
 
+<script src="config.js"></script>
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  const SUPABASE_URL = 'https://kstpwfvokaobkmmmnyhq.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzdHB3ZnZva2FvYmttbW1ueWhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NjY0MjksImV4cCI6MjA4NzI0MjQyOX0.EaKIIqsUkJkLtBgsUkdrCyphlerqQGTh57DErwPbnEk';
+  
+  
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   async function vorhabenAnzeigen() {

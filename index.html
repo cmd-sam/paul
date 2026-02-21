@@ -165,11 +165,12 @@
   </div>
 </div>
 
+<script src="config.js"></script>
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  const SUPABASE_URL = 'DEINE_PROJECT_URL';
-  const SUPABASE_KEY = 'DEIN_ANON_KEY';
+  
+  
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const PAUL_SYSTEM_PROMPT = `Du bist paul, ein stiller Projektbegleiter.
