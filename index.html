@@ -28,23 +28,22 @@
     --warm:         #C68840;
   }
 
-  html {
+  html, body {
     height: 100%;
+    margin: 0;
   }
   body {
     font-family: 'DM Sans', sans-serif;
     background: var(--bg);
     color: var(--text);
-    height: 100%;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   #app {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0;
+    height: 100%;
     overflow: hidden;
   }
 
@@ -108,7 +107,7 @@
   .summary-item:last-child { border-bottom: none; }
   .summary-empty { font-size: 13px; color: var(--accent); opacity: 0.35; font-family: 'DM Mono', monospace; font-weight: 300; }
 
-  .chat-area { flex: 1; overflow-y: scroll; -webkit-overflow-scrolling: touch; padding: 16px 20px 16px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); min-height: 0; }
+  .chat-area { flex: 1 1 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px 20px 16px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); min-height: 0; height: 0; }
 
   .msg { max-width: 84%; padding: 10px 14px; border-radius: 14px; font-size: 16px; line-height: 1.55; animation: fadeUp 0.2s ease; }
 
@@ -151,6 +150,7 @@
 </head>
 <body>
 
+<script src="config.js"></script>
 <div id="app">
 <div class="topbar">
   <a href="vorhaben.html" class="topbar-back">←</a>
@@ -180,7 +180,6 @@
   </div>
 </div>
 
-<script src="config.js"></script>
 </div><!-- end app -->
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
@@ -396,16 +395,20 @@ Maximal 1-2 Sätze. Deutsch.`;
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Mobile keyboard fix for iOS
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      document.getElementById('app').style.height = window.visualViewport.height + 'px';
-      setTimeout(() => {
-        const ca = document.getElementById('chat-area');
-        ca.scrollTop = ca.scrollHeight;
-      }, 50);
-    });
+  // Mobile keyboard + layout fix
+  function fixHeight() {
+    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.getElementById('app').style.height = h + 'px';
+    setTimeout(() => {
+      const ca = document.getElementById('chat-area');
+      ca.scrollTop = ca.scrollHeight;
+    }, 50);
   }
+  fixHeight();
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fixHeight);
+  }
+  window.addEventListener('resize', fixHeight);
 
   start();
 </script>
