@@ -63,6 +63,10 @@
     cursor: pointer;
     transition: all 0.15s ease;
     position: relative;
+    z-index: 1;
+  }
+  .card:has(.card-dropdown.open) {
+    z-index: 999;
   }
   .card:hover { border-color: var(--warm); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
   .card.pinned { border-color: var(--warm); }
@@ -97,7 +101,7 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    z-index: 100;
+    z-index: 1000;
     overflow: hidden;
     display: none;
     min-width: 140px;
