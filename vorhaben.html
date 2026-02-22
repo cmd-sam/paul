@@ -190,6 +190,7 @@
           <div class="card-dropdown-item" data-action="pin">
             ${v.gepinnt ? 'lösen' : 'anpinnen'}
           </div>
+          <div class="card-dropdown-item" data-action="rename">umbenennen</div>
           <div class="card-dropdown-item delete" data-action="delete">löschen</div>
         </div>
       `;
@@ -218,6 +219,11 @@
             vorhabenAnzeigen();
           } else if (item.dataset.action === 'pin') {
             await supabase.from('vorhaben').update({ gepinnt: !v.gepinnt }).eq('id', v.id);
+            vorhabenAnzeigen();
+          } else if (item.dataset.action === 'rename') {
+            const neuerName = prompt('neuer name:', v.name);
+            if (!neuerName || neuerName === v.name) return;
+            await supabase.from('vorhaben').update({ name: neuerName }).eq('id', v.id);
             vorhabenAnzeigen();
           }
         });
