@@ -28,25 +28,22 @@
     --warm:         #C68840;
   }
 
-  html {
-    height: -webkit-fill-available;
+  html, body {
+    height: 100%;
+    overflow: hidden;
   }
   body {
     font-family: 'DM Sans', sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
   }
   #app {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    height: 100%;
     overflow: hidden;
-    position: relative;
   }
 
   .topbar {
@@ -109,7 +106,7 @@
   .summary-item:last-child { border-bottom: none; }
   .summary-empty { font-size: 13px; color: var(--accent); opacity: 0.35; font-family: 'DM Mono', monospace; font-weight: 300; }
 
-  .chat-area { flex: 1; overflow-y: auto; padding: 16px 20px 80px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); -webkit-overflow-scrolling: touch; }
+  .chat-area { flex: 1; overflow-y: scroll; -webkit-overflow-scrolling: touch; padding: 16px 20px 16px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); min-height: 0; }
 
   .msg { max-width: 84%; padding: 10px 14px; border-radius: 14px; font-size: 16px; line-height: 1.55; animation: fadeUp 0.2s ease; }
 
@@ -120,17 +117,7 @@
   .msg-paul .msg-sender { font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 300; color: var(--paul-name); opacity: 0.65; margin-bottom: 4px; letter-spacing: 0.1em; }
   .msg-loading { opacity: 0.38; font-style: italic; font-size: 14px; }
 
-  .chat-input-wrap {
-    padding: 12px 20px 16px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    flex-shrink: 0;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-  }
+  .chat-input-wrap { padding: 12px 20px 16px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; }
   .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
 
   .chat-input {
@@ -409,13 +396,12 @@ Maximal 1-2 Sätze. Deutsch.`;
 
   // Mobile keyboard fix for iOS
   if (window.visualViewport) {
-    const inputWrap = document.querySelector('.chat-input-wrap');
     window.visualViewport.addEventListener('resize', () => {
-      const offsetBottom = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
-      inputWrap.style.bottom = Math.max(0, offsetBottom) + 'px';
+      document.getElementById('app').style.height = window.visualViewport.height + 'px';
       setTimeout(() => {
-        document.getElementById('chat-area').scrollTop = 99999;
-      }, 100);
+        const ca = document.getElementById('chat-area');
+        ca.scrollTop = ca.scrollHeight;
+      }, 50);
     });
   }
 
